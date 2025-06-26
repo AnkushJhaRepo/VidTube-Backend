@@ -62,7 +62,7 @@ const registerUser = asyncHandler(async (req, res) => {
     let avatar;
     try {
         avatar = await uploadOnCloudinary(avatarLocalPath)
-        console.log("Uploaded avatar", avatar);
+        console.log("Uploaded avatar", /*avatar*/);
 
     } catch (error) {
         console.log("Error uploading avatar", error);
@@ -73,7 +73,7 @@ const registerUser = asyncHandler(async (req, res) => {
     let coverImage;
     try {
         coverImage = await uploadOnCloudinary(coverLocalPath)
-        console.log("Uploaded cover image", coverImage);
+        console.log("Uploaded cover image", /*coverImage*/);
 
     } catch (error) {
         console.log("Error uploading cover image", error);
@@ -101,7 +101,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
         return res.status(201).json(new ApiResponse(200, createdUser, "User registered Successfully"))
     } catch (error) {
-        console.log("User creation failed");
+        console.log("User creation failed", error.message, error);
 
         if (avatar) {
             await deleteFromCloudinary(avatar.public_id)

@@ -15,7 +15,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         isPublished: true
     };
 
-    if (query.trim()) {
+    if (query && query.trim()) {
         filter.title = { $regex: query, $options: "i" }; // case-insensitive title search
     }
 
@@ -147,6 +147,8 @@ const getVideoById = asyncHandler(async (req, res) => {
     }
 
     const video = await Video.findById(videoId)
+
+    //console.log(video)
 
     if (!video) {
         throw new ApiError(400, "No such video exist")

@@ -32,7 +32,8 @@ app.use("/api/v1/healthcheck", healthcheckRouter)
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/videos", videoRoute)
 app.use("/api/v1/tweets", tweetRoute)
-app.use("/api/v1/likes", likeRoute)
+app.use("/api/v1/likes", likeRoute);
+console.log("✅ Like route mounted");
 app.use("/api/v1/comments", commentRoute)
 app.use("/api/v1/subscriptions", subscriptionRoute)
 app.use("/api/v1/playlists", playlistRoute)
