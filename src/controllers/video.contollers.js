@@ -33,6 +33,9 @@ const getAllVideos = asyncHandler(async (req, res) => {
         .populate("owner", "username avatar")
         .exec();
 
+    //console.log(videos);
+
+
     const total = await Video.countDocuments(filter);
 
     res.status(200).json(new ApiResponse(
@@ -49,28 +52,69 @@ const getAllVideos = asyncHandler(async (req, res) => {
 })
 
 
+const userAllVideo = asyncHandler(async (req, res) => {
+    const { ownerId } = req.params
+
+    if(!ownerId){
+        throw new ApiError(400,"No video with this owner Id")
+    }
+
+    const filter = {
+        owner: ownerId
+    }
+
+    const videos = await Video.find(filter)
+
+    res.status(200).json(new ApiResponse(
+        200,
+        "All users video",
+        videos
+    ))
+
+
+})
+
+
 const publishAVideo = asyncHandler(async (req, res) => {
     const { title, description } = req.body
+
+    console.log("I have been hit");
+
+
+
+    console.log(req.body)
+
+
 
     if (
         [title, description].some((field) => field.trim() === "")) {
         throw new ApiError(500, "All fields are required")
     }
     const videoLocalPath = req.files?.videoFile?.[0]?.path
+
+
+
     const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path
 
-    let durationInSeconds;
+    let durationFormatted;
     try {
-        durationInSeconds = await new Promise((resolve, reject) => {
+        const durationInSeconds = await new Promise((resolve, reject) => {
             ffmpeg.ffprobe(videoLocalPath, (err, metadata) => {
                 if (err) return reject(err);
                 resolve(metadata.format.duration);
             });
         });
+
+        const minutes = Math.floor(durationInSeconds / 60);
+        const seconds = Math.floor(durationInSeconds % 60);
+        durationFormatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        //console.log("Duration (mm:ss):", durationFormatted);
     } catch (error) {
         console.log("Error getting video duration", error);
         throw new ApiError(500, "Error getting video duration");
     }
+
 
 
     if (!videoLocalPath) {
@@ -106,7 +150,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
             title: title,
             description: description,
             views: 0,
-            duration: durationInSeconds,
+            duration: durationFormatted,
             isPublished: true,
             owner: req.user._id
         })
@@ -125,7 +169,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
         console.log("Error while creating video:", error);
 
         if (videoFile) {
-            deleteFromCloudinary(videoFile, {resource_type: "video"})
+            deleteFromCloudinary(videoFile, { resource_type: "video" })
         }
 
         if (thumbnail) {
@@ -182,18 +226,25 @@ const updateVideo = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Please upload video file")
     }
 
-    let newDurationInSeconds;
+    let newDurationFormatted;
     try {
-        newDurationInSeconds = await new Promise((resolve, reject) => {
+        const newDurationInSeconds = await new Promise((resolve, reject) => {
             ffmpeg.ffprobe(newVideoLocalPath, (err, metadata) => {
                 if (err) return reject(err);
                 resolve(metadata.format.duration);
             });
         });
+
+        const minutes = Math.floor(newDurationInSeconds / 60);
+        const seconds = Math.floor(newDurationInSeconds % 60);
+        newDurationFormatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        console.log("New Video Duration (mm:ss):", newDurationFormatted);
     } catch (error) {
         console.log("Error getting video duration", error);
         throw new ApiError(500, "Error getting video duration");
     }
+
 
     let newVideo;
     try {
@@ -215,7 +266,7 @@ const updateVideo = asyncHandler(async (req, res) => {
         {
             $set: {
                 videoFile: newVideo.url,
-                duration: newDurationInSeconds
+                duration: newDurationFormatted
             }
         },
         { new: true }
@@ -298,5 +349,6 @@ export {
     updateVideo,
     deleteVideo,
     togglePublishStatus,
-    getAllVideos
+    getAllVideos,
+    userAllVideo
 }

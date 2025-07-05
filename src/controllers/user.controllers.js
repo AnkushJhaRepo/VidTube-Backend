@@ -27,6 +27,7 @@ const generateAccessAndRefreshToken = async (userId) => {
     }
 }
 
+
 const registerUser = asyncHandler(async (req, res) => {
     const { fullname, email, username, password } = req.body
 
@@ -163,6 +164,7 @@ const loginUser = asyncHandler(async (req, res) => {
         ))
 
 })
+
 
 const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(

@@ -5,9 +5,17 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 
 
 export const verifyJWT = asyncHandler(async(req, _, next) => {
-    const token = req.cookies?.accessToken || req.body.accessToken ||req.header("Authorization")?.replace("Bearer ","")
 
-    if(!token){
+    
+    
+
+    const token = req.cookies?.accessToken || req.body?.accessToken ||req.headers["authorization"]?.replace("Bearer ","")
+
+
+    
+    
+
+    if(!token){    
         throw new ApiError(401, "Unathorized")
     }
     try {
@@ -19,7 +27,7 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
             throw new ApiError(401, "unathourized")
         }
         
-        req.user = user
+        req.user = user   
 
         next()
 

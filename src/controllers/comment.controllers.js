@@ -7,18 +7,27 @@ import { Video } from "../models/video.models.js"
 
 
 const addComment = asyncHandler(async (req, res) => {
+
+    //console.log("I have been hit")
+
     const { videoId } = req.params
+    //console.log(`videoId is ${videoId}`);
+    
     if (!isValidObjectId(videoId)) {
         throw new ApiError(500, "The video id is wrong")
     }
 
 
     const { content } = req.body
+    //console.log("content",content);
+    
     if (content.trim() === "") {
         throw new ApiError(400, "All fields are required")
     }
 
     const video = await Video.findById(videoId)
+    //console.log(`video is ${video}`);
+    
     if (!video) {
         throw new ApiError(404, "No such video exist")
     }
@@ -30,6 +39,9 @@ const addComment = asyncHandler(async (req, res) => {
             content: content,
             owner: req.user._id
         })
+
+        //console.log("Commented successfully");
+        
 
         res.status(201).json(new ApiResponse(
             201,

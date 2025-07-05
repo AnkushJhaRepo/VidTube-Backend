@@ -9,11 +9,11 @@ import { Comment } from "../models/comment.models.js";
 
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
-    console.log("📥 Incoming like toggle request");
+    //console.log("📥 Incoming like toggle request");
 
     try {
         const { videoId } = req.params;
-        console.log("➡️ videoId:", videoId);
+        //console.log("➡️ videoId:", videoId);
 
         if (!isValidObjectId(videoId)) {
             console.error("❌ Invalid video ID");
@@ -21,7 +21,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         }
 
         const userId = req.user?._id;
-        console.log("👤 User ID:", userId);
+        //console.log("👤 User ID:", userId);
 
         const video = await Video.findById(videoId);
         if (!video) {
@@ -29,17 +29,17 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
             throw new Error("Video not found");
         }
 
-        console.log("🔍 Checking existing like");
+        //console.log("🔍 Checking existing like");
         const existingLike = await Like.findOne({ video: videoId, likedBy: userId });
 
         let liked;
         if (existingLike) {
-            console.log("💔 Unliking...");
+            //console.log("💔 Unliking...");
             await Like.findByIdAndDelete(existingLike._id);
             liked = false;
 
         } else {
-            console.log("❤️ Liking...");
+            //console.log("❤️ Liking...");
             await Like.create({ video: videoId, likedBy: userId });
             liked = true;
         }
@@ -48,7 +48,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 
         await Video.findByIdAndUpdate(videoId, { likesCount });
 
-        console.log("✅ Like count:", likesCount);
+        //console.log("✅ Like count:", likesCount);
 
         return res.status(200).json({
             success: true,
@@ -78,10 +78,10 @@ const videoDetails = asyncHandler(async (req, res) => {
         let liked
 
         if (existingLike) {
-            console.log("💔 Unliking...");
+            //console.log("💔 Unliking...");
             liked = false;
         } else {
-            console.log("❤️ Liking...");
+            //console.log("❤️ Liking...");
             liked = true;
         }
 

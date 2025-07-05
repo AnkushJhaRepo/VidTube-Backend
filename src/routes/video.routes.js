@@ -5,7 +5,8 @@ import {
     updateVideo,
     deleteVideo,
     togglePublishStatus,
-    getAllVideos
+    getAllVideos,
+    userAllVideo
 } from "../controllers/video.contollers.js";
 import { upload } from "../middlewares/multer.middlewares.js";
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -36,5 +37,6 @@ router.route("/upload-video").post(verifyJWT,
 router.route("/u/:videoId").post(verifyJWT, upload.single("videoFile"), updateVideo)
 router.route("/d/:videoId").delete(verifyJWT, deleteVideo)
 router.route("/p/:videoId").patch(verifyJWT, togglePublishStatus)
+router.route("/user-video/:ownerId").get(verifyJWT, userAllVideo)
 
 export default router
